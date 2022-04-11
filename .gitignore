@@ -1,0 +1,6 @@
+.idea
+out
+*.iml
+src/conclusions.txt
+src/data.csv
+src/KtoCo.java
