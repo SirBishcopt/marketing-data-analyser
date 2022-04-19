@@ -21,13 +21,13 @@ public class Brand {
     }
 
     private void readBrandsDataInInts(int[] dataInInts) {
-        quantitativeSaleMat = new IntsToCompare(dataInInts[0],dataInInts[1], Configurator.getQuantitativeSaleMatSignificance());
-        quantitativeSaleMonthly = new IntsToCompare(dataInInts[2],dataInInts[3],Configurator.getQuantitativeSaleMonthlySignificance());
+        quantitativeSaleMat = new IntsToCompare(dataInInts[0], dataInInts[1], Configurator.getQuantitativeSaleMatSignificance());
+        quantitativeSaleMonthly = new IntsToCompare(dataInInts[2], dataInInts[3], Configurator.getQuantitativeSaleMonthlySignificance());
     }
 
     private void readBrandsDataInDouble(double[] dataInDouble) {
-        marketShareMat = new DoublesToCompare(dataInDouble[0],dataInDouble[1],Configurator.getMarketShareMatSignificance());
-        marketShareMonthly = new DoublesToCompare(dataInDouble[2],dataInDouble[3],Configurator.getMarketShareMonthlySignificance());
+        marketShareMat = new DoublesToCompare(dataInDouble[0], dataInDouble[1], Configurator.getMarketShareMatSignificance());
+        marketShareMonthly = new DoublesToCompare(dataInDouble[2], dataInDouble[3], Configurator.getMarketShareMonthlySignificance());
     }
 
     public void addProduct(String name, double[] dataInDouble) {
@@ -72,10 +72,10 @@ public class Brand {
         }
 
         private void readProductsDataInDouble(double[] dataInDouble) {
-            pricesMat = new DoublesToCompare(dataInDouble[0],dataInDouble[1],Configurator.getPricesMatSignificance());
-            pricesMonthly = new DoublesToCompare(dataInDouble[2],dataInDouble[3],Configurator.getPricesMonthlySignificance());
-            distributionMat = new DoublesToCompare(dataInDouble[4],dataInDouble[5],Configurator.getDistributionMatSignificance());
-            distributionMonthly = new DoublesToCompare(dataInDouble[6],dataInDouble[7],Configurator.getDistributionMonthlySignificance());
+            pricesMat = new DoublesToCompare(dataInDouble[0], dataInDouble[1], Configurator.getPricesMatSignificance());
+            pricesMonthly = new DoublesToCompare(dataInDouble[2], dataInDouble[3], Configurator.getPricesMonthlySignificance());
+            distributionMat = new DoublesToCompare(dataInDouble[4], dataInDouble[5], Configurator.getDistributionMatSignificance());
+            distributionMonthly = new DoublesToCompare(dataInDouble[6], dataInDouble[7], Configurator.getDistributionMonthlySignificance());
         }
 
         public DoublesToCompare getPricesMat() {

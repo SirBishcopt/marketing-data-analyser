@@ -3,7 +3,7 @@ package domain;
 public abstract class ValuesToCompare {
 
     private double difference;
-    private double significance; //0.2
+    private double significance;
 
 
     public ValuesToCompare(double difference, double significance) {
@@ -15,7 +15,7 @@ public abstract class ValuesToCompare {
         return Math.abs(difference) >= significance;
     }
 
-    public double getPercentageDifference(){
+    public double getPercentageDifference() {
         return difference;
     }
 

@@ -1,0 +1,9 @@
+quantitativeSaleMatSignificance:0.2
+quantitativeSaleMonthlySignificance:0.2
+marketShareMatSignificance:0.2
+marketShareMonthlySignificance:0.2
+pricesMatSignificance:1.0
+pricesMonthlySignificance:0.5
+distributionMatSignificance:0.05
+distributionMonthlySignificance:0.05
+marketShareMatLimit:0.01
