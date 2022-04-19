@@ -1,6 +1,7 @@
 package services;
 
 import domain.Brand;
+import domain.DoublesToCompare;
 import domain.IntsToCompare;
 import repositories.Configurator;
 
@@ -24,18 +25,6 @@ public class ConclusionCreator {
     }
 
     public List<String> createConclusions(List<Brand> brands) {
-        boolean containsProducts = false;
-        for (Brand brand : brands) {
-            if (brand.getProducts() != null) {
-                containsProducts = true;
-                break;
-            }
-        }
-        if (!containsProducts) {
-            ErrorFileGenerator errorFileGenerator = new ErrorFileGenerator();
-            errorFileGenerator.generateErrorFile("Błąd zawartości pliku z danymi.");
-            System.exit(-1);
-        }
         List<String> conclusions = new ArrayList<>();
         Collections.addAll(conclusions, "ANALIZA RYNKU PEX " + LocalDate.now(), "", "");
         Collections.addAll(conclusions, "SPRZEDAŻ ILOŚCIOWO", "");
@@ -55,49 +44,42 @@ public class ConclusionCreator {
     private List<String> analyseQuantitativeSales(List<Brand> brands) {
         List<String> conclusions = new ArrayList<>();
         for (Brand brand : brands) {
-
             boolean isMarketShareAboveLimit = brand.getMarketShareMat().getCurrentPeriod() > Configurator.getMarketShareMatLimit();
             if (brand.getQuantitativeSaleMat().isChangeSignificant() && isMarketShareAboveLimit) {
-
+                conclusions.add(createStatementAboutQuantitativeSales(brand, Period.MAT, brand.getQuantitativeSaleMat()));
             }
-
             if (brand.getQuantitativeSaleMonthly().isChangeSignificant() && isMarketShareAboveLimit) {
-                String statement = chooseStatement(Period.MONTH, brand.getQuantitativeSaleMonthly().getPercentageDifference());
-                conclusions.add(brand + statement + integerFormat.format(brand.getQuantitativeSaleMonthly().getPreviousPeriod()) + " na "
-                        + integerFormat.format(brand.getQuantitativeSaleMonthly().getCurrentPeriod()) + ", czyli o "
-                        + integerFormat.format(brand.getQuantitativeSaleMonthly().getValueDifference())
-                        + ", co stanowi zmianę o " + percentageFormat.format(brand.getQuantitativeSaleMonthly().getPercentageDifference()) + ".");
+                conclusions.add(createStatementAboutQuantitativeSales(brand, Period.MONTH, brand.getQuantitativeSaleMonthly()));
             }
-
-
         }
         return conclusions;
     }
 
-    private String aaa(Brand brand, Period period, IntsToCompare ints) {
-      //  IntsToCompare ints = brand.getQuantitativeSaleMat();
-        String statement = chooseStatement(period, brand.getQuantitativeSaleMat().getPercentageDifference());
-        return brand + statement + integerFormat.format(brand.getQuantitativeSaleMat().getPreviousPeriod()) + " na "
-                + integerFormat.format(brand.getQuantitativeSaleMat().getCurrentPeriod()) + ", czyli o "
-                + integerFormat.format(brand.getQuantitativeSaleMat().getValueDifference())
-                + ", co stanowi zmianę o " + percentageFormat.format(brand.getQuantitativeSaleMat().getPercentageDifference()) + ".";
+    private String createStatementAboutQuantitativeSales(Brand brand, Period period, IntsToCompare quantitativeSaleInGivenPeriod) {
+        return brand + chooseStatement(period, quantitativeSaleInGivenPeriod.getPercentageDifference())
+                + integerFormat.format(quantitativeSaleInGivenPeriod.getPreviousPeriod()) + " na "
+                + integerFormat.format(quantitativeSaleInGivenPeriod.getCurrentPeriod()) + ", czyli o "
+                + integerFormat.format(quantitativeSaleInGivenPeriod.getValueDifference())
+                + ", co stanowi zmianę o " + percentageFormat.format(quantitativeSaleInGivenPeriod.getPercentageDifference()) + ".";
     }
 
     private List<String> analyseMarketShare(List<Brand> brands) {
         List<String> conclusions = new ArrayList<>();
         for (Brand brand : brands) {
             if (brand.getMarketShareMat().isChangeSignificant()) {
-                String statement = chooseStatement(Period.MAT, brand.getMarketShareMat().getPercentageDifference());
-                conclusions.add(brand + statement + percentageFormat.format(brand.getMarketShareMat().getPreviousPeriod())
-                        + " na " + percentageFormat.format(brand.getMarketShareMat().getCurrentPeriod()) + ".");
+                conclusions.add(createStatementAboutMarketShare(brand, Period.MAT, brand.getMarketShareMat()));
             }
             if (brand.getMarketShareMonthly().isChangeSignificant()) {
-                String statement = chooseStatement(Period.MONTH, brand.getMarketShareMonthly().getPercentageDifference());
-                conclusions.add(brand + statement + percentageFormat.format(brand.getMarketShareMonthly().getPreviousPeriod())
-                        + " na " + percentageFormat.format(brand.getMarketShareMonthly().getCurrentPeriod()) + ".");
+                conclusions.add(createStatementAboutMarketShare(brand, Period.MONTH, brand.getMarketShareMonthly()));
             }
         }
         return conclusions;
+    }
+
+    private String createStatementAboutMarketShare(Brand brand, Period period, DoublesToCompare marketShareInGivenPeriod) {
+        return brand + chooseStatement(period, marketShareInGivenPeriod.getPercentageDifference())
+                + percentageFormat.format(marketShareInGivenPeriod.getPreviousPeriod())
+                + " na " + percentageFormat.format(marketShareInGivenPeriod.getCurrentPeriod()) + ".";
     }
 
     private List<String> analysePrices(List<Brand> brands) {
@@ -105,25 +87,25 @@ public class ConclusionCreator {
         for (Brand brand : brands) {
             List<Brand.Product> products = brand.getProducts();
             for (Brand.Product product : products) {
-                if (product.getPricesMat().isChangeSignificant() && brand.getMarketShareMat().getCurrentPeriod() > Configurator.getMarketShareMatLimit()
-                        && product.getPricesMat().getCurrentPeriod() != 0) {
-                    String statement = chooseStatement(Period.MAT, product.getPricesMat().getPercentageDifference());
-                    conclusions.add(product + statement + currencyFormat.format(product.getPricesMat().getPreviousPeriod())
-                            + " na " + currencyFormat.format(product.getPricesMat().getCurrentPeriod())
-                            + ", czyli o " + currencyFormat.format(product.getPricesMat().getValueDifference())
-                            + ", co stanowi " + percentageFormat.format(product.getPricesMat().getPercentageDifference()) + ".");
+                boolean isMarketShareAboveLimitAndCurrentPriceAboveZero = brand.getMarketShareMat().getCurrentPeriod() > Configurator.getMarketShareMatLimit()
+                        && product.getPricesMat().getCurrentPeriod() != 0;
+                if (product.getPricesMat().isChangeSignificant() && isMarketShareAboveLimitAndCurrentPriceAboveZero) {
+                    conclusions.add(createStatementAboutPrices(product, Period.MAT, product.getPricesMat()));
                 }
-                if (product.getPricesMonthly().isChangeSignificant() && brand.getMarketShareMat().getCurrentPeriod() > Configurator.getMarketShareMatLimit()
-                        && product.getPricesMonthly().getCurrentPeriod() != 0) {
-                    String statement = chooseStatement(Period.MONTH, product.getPricesMonthly().getPercentageDifference());
-                    conclusions.add(product + statement + currencyFormat.format(product.getPricesMonthly().getPreviousPeriod())
-                            + " na " + currencyFormat.format(product.getPricesMonthly().getCurrentPeriod())
-                            + ", czyli o " + currencyFormat.format(product.getPricesMonthly().getValueDifference())
-                            + ", co stanowi " + percentageFormat.format(product.getPricesMonthly().getPercentageDifference()) + ".");
+                if (product.getPricesMonthly().isChangeSignificant() && isMarketShareAboveLimitAndCurrentPriceAboveZero) {
+                    conclusions.add(createStatementAboutPrices(product, Period.MONTH, product.getPricesMonthly()));
                 }
             }
         }
         return conclusions;
+    }
+
+    private String createStatementAboutPrices(Brand.Product product, Period period, DoublesToCompare pricesInGivenPeriod) {
+        return product + chooseStatement(period, pricesInGivenPeriod.getPercentageDifference())
+                + currencyFormat.format(pricesInGivenPeriod.getPreviousPeriod())
+                + " na " + currencyFormat.format(pricesInGivenPeriod.getCurrentPeriod())
+                + ", czyli o " + currencyFormat.format(pricesInGivenPeriod.getValueDifference())
+                + ", co stanowi " + percentageFormat.format(pricesInGivenPeriod.getPercentageDifference()) + ".";
     }
 
     private List<String> analyseDistribution(List<Brand> brands) {
@@ -132,18 +114,20 @@ public class ConclusionCreator {
             List<Brand.Product> products = brand.getProducts();
             for (Brand.Product product : products) {
                 if (product.getDistributionMat().isChangeSignificant()) {
-                    String statement = chooseStatement(Period.MAT, product.getDistributionMat().getPercentageDifference());
-                    conclusions.add(product + statement + percentageFormat.format(product.getDistributionMat().getPreviousPeriod())
-                            + " na " + percentageFormat.format(product.getDistributionMat().getCurrentPeriod()) + ".");
+                    conclusions.add(createStatementAboutDistribution(product, Period.MAT, product.getDistributionMat()));
                 }
                 if (product.getDistributionMonthly().isChangeSignificant()) {
-                    String statement = chooseStatement(Period.MONTH, product.getDistributionMonthly().getPercentageDifference());
-                    conclusions.add(product + statement + percentageFormat.format(product.getDistributionMonthly().getPreviousPeriod())
-                            + " na " + percentageFormat.format(product.getDistributionMonthly().getCurrentPeriod()) + ".");
+                    conclusions.add(createStatementAboutDistribution(product, Period.MONTH, product.getDistributionMonthly()));
                 }
             }
         }
         return conclusions;
+    }
+
+    private String createStatementAboutDistribution(Brand.Product product, Period period, DoublesToCompare distributionInGivenPeriod) {
+        return product + chooseStatement(period, distributionInGivenPeriod.getPercentageDifference())
+                + percentageFormat.format(distributionInGivenPeriod.getPreviousPeriod())
+                + " na " + percentageFormat.format(distributionInGivenPeriod.getCurrentPeriod()) + ".";
     }
 
     private String chooseStatement(Period period, double percentageDifference) {

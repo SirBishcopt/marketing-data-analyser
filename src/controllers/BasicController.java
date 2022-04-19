@@ -2,28 +2,29 @@ package controllers;
 
 import domain.Brand;
 import services.ConclusionCreator;
-import services.DataPreparingService;
-import services.ConclusionFileGenerator;
+import services.DataConverter;
 import services.IOService;
 
 import java.util.List;
 
-// STATIC adresy plików - generalnie pojedyncze pliki, czy inty
-
 public class BasicController {
 
-    // private ErrorHandler i tutatj wsie trykecze
+    private static String DATA_FILE_PATH = "src\\data.csv";
+    private static String CONCLUSIONS_FILE_PATH = "src\\conclusions.txt";
 
     public void start() {
 
         IOService ioService = new IOService();
-        List<Brand> brands = ioService.prepareData("src\\data.csv");
+        List<String> rawData = ioService.loadFile(DATA_FILE_PATH);
+
+        DataConverter dataConverter = new DataConverter();
+        List<Brand> brands = dataConverter.convertRawDataToBrands(rawData);
+
         ConclusionCreator conclusionCreator = new ConclusionCreator();
         List<String> conclusions = conclusionCreator.createConclusions(brands);
-        ConclusionFileGenerator conclusionFileGenerator = new ConclusionFileGenerator();
-        conclusionFileGenerator.saveConclusions(conclusions, "src\\conclusions.txt");
+
+        ioService.saveFile(conclusions, CONCLUSIONS_FILE_PATH);
+
     }
 
 }
-
-//input / output do pliku tekstowego w jednym obiekcie
