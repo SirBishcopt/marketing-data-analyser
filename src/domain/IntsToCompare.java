@@ -11,7 +11,7 @@ public class IntsToCompare extends ValuesToCompare {
         this.currentPeriod = currentPeriod;
     }
 
-    public int getValueDifference(){
+    public int getValueDifference() {
         return currentPeriod - previousPeriod;
     }
 

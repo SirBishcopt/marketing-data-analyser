@@ -7,3 +7,15 @@ pricesMonthlySignificance:0.5
 distributionMatSignificance:0.05
 distributionMonthlySignificance:0.05
 marketShareMatLimit:0.01
+quantitativeSaleColumnPreviousMat:2
+quantitativeSaleColumnCurrentMat:14
+quantitativeSaleColumnPreviousMonth:15
+quantitativeSaleColumnCurrentMonth:27
+pricesColumnPreviousMat:28
+pricesColumnCurrentMat:40
+pricesColumnPreviousMonth:41
+pricesColumnCurrentMonth:53
+distributionColumnPreviousMat:54
+distributionColumnCurrentMat:66
+distributionColumnPreviousMonth:67
+distributionColumnCurrentMonth:79

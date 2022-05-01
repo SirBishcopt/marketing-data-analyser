@@ -52,7 +52,7 @@ public class ConclusionCreator {
                 conclusions.add(createStatementAboutQuantitativeSales(brand, Period.MONTH, brand.getQuantitativeSaleMonthly()));
             }
         }
-        return conclusions;
+        return addCommentIfEmpty(conclusions);
     }
 
     private String createStatementAboutQuantitativeSales(Brand brand, Period period, IntsToCompare quantitativeSaleInGivenPeriod) {
@@ -73,7 +73,7 @@ public class ConclusionCreator {
                 conclusions.add(createStatementAboutMarketShare(brand, Period.MONTH, brand.getMarketShareMonthly()));
             }
         }
-        return conclusions;
+        return addCommentIfEmpty(conclusions);
     }
 
     private String createStatementAboutMarketShare(Brand brand, Period period, DoublesToCompare marketShareInGivenPeriod) {
@@ -97,7 +97,7 @@ public class ConclusionCreator {
                 }
             }
         }
-        return conclusions;
+        return addCommentIfEmpty(conclusions);
     }
 
     private String createStatementAboutPrices(Brand.Product product, Period period, DoublesToCompare pricesInGivenPeriod) {
@@ -121,7 +121,7 @@ public class ConclusionCreator {
                 }
             }
         }
-        return conclusions;
+        return addCommentIfEmpty(conclusions);
     }
 
     private String createStatementAboutDistribution(Brand.Product product, Period period, DoublesToCompare distributionInGivenPeriod) {
@@ -138,6 +138,13 @@ public class ConclusionCreator {
             statement = "zalicza spadek, z ";
         }
         return period + statement;
+    }
+
+    private List<String> addCommentIfEmpty(List<String> conclusions) {
+        if (conclusions.isEmpty()) {
+            conclusions.add("Brak zmian w podanym zakresie.");
+        }
+        return conclusions;
     }
 
     private enum Period {

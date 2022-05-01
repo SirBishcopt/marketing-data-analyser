@@ -18,7 +18,7 @@ public class DoublesToCompare extends ValuesToCompare {
         return Math.abs(currentPeriod - previousPeriod) >= (significance);
     }
 
-    public double getValueDifference(){
+    public double getValueDifference() {
         return currentPeriod - previousPeriod;
     }
 

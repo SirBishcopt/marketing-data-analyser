@@ -1,6 +1,10 @@
 package controllers;
 
 import domain.Brand;
+import exceptions.ConclusionFileException;
+import exceptions.ConfigDataException;
+import exceptions.ConfigFileException;
+import exceptions.DataFileException;
 import services.ConclusionCreator;
 import services.DataConverter;
 import services.IOService;
@@ -14,16 +18,21 @@ public class BasicController {
 
     public void start() {
 
-        IOService ioService = new IOService();
-        List<String> rawData = ioService.loadFile(DATA_FILE_PATH);
+        try {
+            IOService ioService = new IOService();
 
-        DataConverter dataConverter = new DataConverter();
-        List<Brand> brands = dataConverter.convertRawDataToBrands(rawData);
+            List<String> rawData = ioService.loadFile(DATA_FILE_PATH);
 
-        ConclusionCreator conclusionCreator = new ConclusionCreator();
-        List<String> conclusions = conclusionCreator.createConclusions(brands);
+            DataConverter dataConverter = new DataConverter();
+            List<Brand> brands = dataConverter.convertRawDataToBrands(rawData);
 
-        ioService.saveFile(conclusions, CONCLUSIONS_FILE_PATH);
+            ConclusionCreator conclusionCreator = new ConclusionCreator();
+            List<String> conclusions = conclusionCreator.createConclusions(brands);
+
+            ioService.saveFile(conclusions, CONCLUSIONS_FILE_PATH);
+        } catch (ConfigFileException | ConfigDataException | DataFileException | ConclusionFileException e) {
+            System.out.println(e.getMessage());
+        }
 
     }
 
